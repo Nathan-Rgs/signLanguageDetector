@@ -2,7 +2,7 @@ import os
 import cv2
 import string
 
-DATA_DIR = './amostra_imagens'
+DATA_DIR = './data/images'
 if not os.path.exists(DATA_DIR):
   os.makedirs(DATA_DIR)
 
