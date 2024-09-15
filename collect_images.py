@@ -26,23 +26,22 @@ for j, letter in enumerate(alphabet):
     ret, frame = cap.read()
 
     if not ret:
-        print("Erro: Não foi possível capturar a imagem da câmera.")
-        break
+      print("Erro: Não foi possível capturar a imagem da câmera.")
+      break
 
-    cv2.putText(frame, f'Letra: {letter} - Pressione "Q"', 
-                (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
+    cv2.putText(frame, f'Letra: {letter} - Pressione "Q"', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
     cv2.imshow('frame', frame)
 
     if cv2.waitKey(25) == ord('q'):
-        break
+      break
 
   counter = 0
   while counter < dataset_size:
     ret, frame = cap.read()
 
     if not ret:
-        print("Erro: Não foi possível capturar a imagem da câmera.")
-        break
+      print("Erro: Não foi possível capturar a imagem da câmera.")
+      break
 
     cv2.imshow('frame', frame)
     cv2.waitKey(25)
