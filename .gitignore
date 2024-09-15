@@ -1,5 +1,5 @@
-amostra_imagens/*
-!amostra_imagens/
+data/*
+!data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
