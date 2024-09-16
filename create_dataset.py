@@ -1,7 +1,5 @@
-import os 
-import pickle
+import os, time, pickle, cv2
 import mediapipe as mp
-import cv2
 import matplotlib.pyplot as plt
 
 # Inicializando o módulo de detecção de mãos do MediaPipe
@@ -18,6 +16,9 @@ DATA_DIR = './data/images'
 # Inicializando listas para armazenar os dados (landmarks normalizados) e rótulos (labels)
 data = []
 labels = []
+
+# Iniciar o cronômetro
+start_time = time.time()
 
 # Iterando por todas as subpastas do diretório (cada subpasta é uma classe/rótulo)
 for dir_ in os.listdir(DATA_DIR):
@@ -37,6 +38,7 @@ for dir_ in os.listdir(DATA_DIR):
 
         # Se uma mão for detectada na imagem
         if results.multi_hand_landmarks:
+            print('GERANDO DATASET...')
             # Itera por todas as mãos detectadas (no caso de haver mais de uma)
             for hand_landmarks in results.multi_hand_landmarks:
                 # Para cada ponto de referência (landmark), extrai as coordenadas x e y
@@ -60,6 +62,13 @@ for dir_ in os.listdir(DATA_DIR):
             data.append(data_aux)
             # Adiciona o nome da subpasta (que corresponde ao rótulo/classe) à lista de rótulos
             labels.append(dir_)
+            
+# Finalizar o cronômetro
+end_time = time.time()
+
+# Calculando o tempo total de execução
+execution_time = end_time - start_time
+print(f'Tempo total para criar o dataset: {execution_time:.2f} segundos')
 
 # Abrindo um arquivo pickle para salvar os dados processados
 f = open('./data/data.pickle', 'wb')
