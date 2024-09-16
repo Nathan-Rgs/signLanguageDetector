@@ -1,6 +1,10 @@
-import pickle, cv2, string, random, time
+import pickle
+import cv2
 import mediapipe as mp
 import numpy as np
+import string
+import random
+import time
 
 # Carregar o modelo treinado
 model_dict = pickle.load(open('./data/model.p', 'rb'))
@@ -17,15 +21,29 @@ mp_drawing_styles = mp.solutions.drawing_styles
 # Inicializar o detector de mãos
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.5)
 
-# Definir os rótulos corretamente usando uma lista (garantindo a ordem)
-labels_dict = list(string.ascii_uppercase)
+# Listas de palavras por dificuldade
+easy_words = [
+    "AMOR", "PAZ", "LUA", "SOL", "FLOR", "BOCA", "OLHO", "MÃO", "PÉ", "CÉU", "MAR", "BOM", "MAU", "VIDA", "FÉ", 
+    "CALMA", "DIA", "NOITE", "SORRIR", "ÁGUA"
+]
+medium_words = [
+    "CASA", "MUNDO", "FAMÍLIA", "LIVRO", "ESCOLA", "AMIGO", "FELIZ", "CIDADE", "PEIXE", "FLORIDA"
+]
+hard_words = [
+    "CONHECIMENTO", "RESPONSABILIDADE", "DESENVOLVIMENTO", "UNIVERSIDADE", "INTELIGÊNCIA", "COMUNICAÇÃO", 
+    "SIGNIFICADO", "AUTOMÓVEL", "INFORMAÇÃO", "IMPLEMENTAÇÃO"
+]
 
-# Lista de palavras para soletrar
-words = ["ABBA", "CABA"]
-
-# Função para escolher uma palavra aleatória
-def new_word():
-    return random.choice(words)
+# Função para escolher uma palavra aleatória com base na dificuldade
+def new_word(difficulty):
+    if difficulty == 'easy':
+        return random.choice(easy_words)
+    elif difficulty == 'medium':
+        return random.choice(medium_words)
+    elif difficulty == 'hard':
+        return random.choice(hard_words)
+    else:
+        return random.choice(easy_words)  # Padrão para fácil
 
 # Função para exibir a palavra por 3 segundos antes de começar a soletrar
 def show_spelled_word(frame, word, time_sec=3):
@@ -37,18 +55,15 @@ def show_spelled_word(frame, word, time_sec=3):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-# Variáveis do jogo
-correct_words = 0
-current_word = new_word()
-current_letter_idx = 0
-hit_letters = []
-erros = False
-
 # Função principal que pode alternar entre o modo de jogo e leitor de linguagem de sinais
-def main(game_mode=True):
-    global correct_words, current_word, current_letter_idx, hit_letters, erros
-
+def main(game_mode=True, difficulty='easy'):
     if game_mode:
+        correct_words = 0
+        current_word = new_word(difficulty)
+        current_letter_idx = 0
+        hit_letters = []
+        erros = False
+    
         # Exibir a palavra por 3 segundos antes do jogo começar
         ret, frame = cap.read()
         show_spelled_word(frame, current_word, time_sec=3)
@@ -88,8 +103,7 @@ def main(game_mode=True):
 
             # Extrair e normalizar as coordenadas x e y dos landmarks
             for i in range(len(hand_landmarks.landmark)):
-                # Converter para coordenadas da imagem
-                x = hand_landmarks.landmark[i].x * W
+                x = hand_landmarks.landmark[i].x * W  # Converter para coordenadas da imagem
                 y = hand_landmarks.landmark[i].y * H
 
                 x_.append(x)
@@ -118,7 +132,7 @@ def main(game_mode=True):
                         correct_words += 1
                         current_letter_idx = 0
                         hit_letters = []
-                        current_word = new_word()
+                        current_word = new_word(difficulty)
 
                         # Exibir a nova palavra por 3 segundos
                         show_spelled_word(frame, current_word, time_sec=3)
@@ -152,8 +166,8 @@ def main(game_mode=True):
                 y2 = int(max(y_)) + 10
 
                 # Desenhar o retângulo e exibir a letra
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 2)
-                cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
 
         # Mostrar o frame com os resultados
         cv2.imshow('frame', frame)
@@ -164,10 +178,15 @@ def main(game_mode=True):
     cap.release()
     cv2.destroyAllWindows()
     if game_mode:
-        print("Jogo encerrado! Você soletrou 3 palavras corretamente!")
+        print(f"Jogo encerrado! Você soletrou {correct_words} palavras corretamente!")
 
 # Perguntar ao usuário se deseja entrar no modo de jogo
 response = input("Você deseja entrar no modo de jogo? (s/n): ").strip().lower()
+
+# Perguntar a dificuldade se o modo de jogo for selecionado
+difficulty = 'easy'
+if response == 's':
+    difficulty = input("Escolha a dificuldade (easy, medium, hard): ").strip().lower()
 
 # Definir o modo de jogo com base na resposta do usuário
 if response == 's':
@@ -178,5 +197,5 @@ else:
     print("Resposta inválida. Executando no modo leitor de sinais por padrão.")
     game_mode = False
 
-# Chamar a função principal com o modo escolhido
-main(game_mode=game_mode)
+# Chamar a função principal com o modo e a dificuldade escolhidos
+main(game_mode=game_mode, difficulty=difficulty)
