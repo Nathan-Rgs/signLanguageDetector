@@ -11,12 +11,23 @@ data_dict = pickle.load(open('./data/data.pickle', 'rb'))
 data_lengths = [len(d) for d in data_dict['data']]
 max_length = max(data_lengths)
 
+# Inicializa um conjunto (set) para armazenar rótulos de letras com dados inconsistentes
+inconsistent_labels = set()
+
 # Verifica se há inconsistências no tamanho das listas
 for i, length in enumerate(data_lengths):
 	if length != max_length:
-		# Obtendo o rótulo e a imagem inconsistente
+		# Adiciona o rótulo da letra inconsistente ao conjunto (sem repetições)
 		label = data_dict['labels'][i]
-		print(f"Inconsistencia no tamanho da lista, index {i}: esperado {max_length}, obtido {length}. Rotulo: {label}")
+		inconsistent_labels.add(label)
+
+# Mostra as letras com dados inconsistentes ao final da execução
+if inconsistent_labels:
+	print("Letras com dados inconsistentes:")
+	for label in inconsistent_labels:
+		print(f"- {label}")
+else:
+	print("Todos os dados estão consistentes!")
 
 # Padroniza as listas: Preenche com zeros as listas que forem menores
 data = np.array([d + [0] * (max_length - len(d)) for d in data_dict['data']])
@@ -40,7 +51,7 @@ y_predict = model.predict(x_test)
 score = accuracy_score(y_predict, y_test)
 
 # Exibe a acurácia
-print('{}% of samples were classified correctly!'.format(score * 100))
+print('{}% de amostras classificadas corretamente!'.format(score * 100))
 
 # Salva o modelo treinado em um arquivo pickle
 with open('./data/model.p', 'wb') as f:

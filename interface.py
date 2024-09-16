@@ -166,8 +166,8 @@ def main(game_mode=True, difficulty='easy'):
                 y2 = int(max(y_)) + 10
 
                 # Desenhar o retângulo e exibir a letra
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (255, 255, 255), 3, cv2.LINE_AA)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 2)
+                cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
 
         # Mostrar o frame com os resultados
         cv2.imshow('frame', frame)

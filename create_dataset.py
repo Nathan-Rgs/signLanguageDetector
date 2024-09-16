@@ -23,6 +23,7 @@ start_time = time.time()
 # Iterando por todas as subpastas do diretório (cada subpasta é uma classe/rótulo)
 for dir_ in os.listdir(DATA_DIR):
     # Iterando por todas as imagens dentro de cada subpasta
+    print(f'GERANDO DATASET: {dir_}')
     for img_path in os.listdir(os.path.join(DATA_DIR, dir_)):
         data_aux = []  # Lista auxiliar para armazenar as coordenadas de uma única imagem
         x_ = []  # Lista auxiliar para armazenar os valores de x dos landmarks
@@ -38,7 +39,6 @@ for dir_ in os.listdir(DATA_DIR):
 
         # Se uma mão for detectada na imagem
         if results.multi_hand_landmarks:
-            print('GERANDO DATASET...')
             # Itera por todas as mãos detectadas (no caso de haver mais de uma)
             for hand_landmarks in results.multi_hand_landmarks:
                 # Para cada ponto de referência (landmark), extrai as coordenadas x e y
@@ -68,7 +68,7 @@ end_time = time.time()
 
 # Calculando o tempo total de execução
 execution_time = end_time - start_time
-print(f'Tempo total para criar o dataset: {execution_time:.2f} segundos')
+print(f'Tempo total para criar o dataset: {execution_time / 60 :.2f} minutos')
 
 # Abrindo um arquivo pickle para salvar os dados processados
 f = open('./data/data.pickle', 'wb')
