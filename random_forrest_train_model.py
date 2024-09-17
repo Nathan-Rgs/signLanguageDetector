@@ -54,5 +54,5 @@ score = accuracy_score(y_predict, y_test)
 print('{}% de amostras classificadas corretamente!'.format(score * 100))
 
 # Salva o modelo treinado em um arquivo pickle
-with open('./data/model.p', 'wb') as f:
+with open('./data/random_forrest_model.p', 'wb') as f:
 	pickle.dump({'model': model}, f)
