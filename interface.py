@@ -2,12 +2,11 @@ import pickle
 import cv2
 import mediapipe as mp
 import numpy as np
-import string
 import random
 import time
 
 # Carregar o modelo treinado
-model_dict = pickle.load(open('./data/model.p', 'rb'))
+model_dict = pickle.load(open('./data/random_forrest_model.p', 'rb'))
 model = model_dict['model']
 
 # Iniciar a captura de vídeo
