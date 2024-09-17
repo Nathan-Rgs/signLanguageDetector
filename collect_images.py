@@ -2,6 +2,8 @@ import os
 import cv2
 import string
 
+DATASET_SIZE = 300  # Número de imagens que queremos adicionar por letra
+
 # Diretório para salvar as imagens
 DATA_DIR = './data/images'
 if not os.path.exists(DATA_DIR):
@@ -9,7 +11,6 @@ if not os.path.exists(DATA_DIR):
 
 # Lista de letras do alfabeto A-Z
 alphabet = list(string.ascii_uppercase)
-dataset_size = 100  # Número de imagens que queremos adicionar por letra
 
 # Função para obter o maior número de arquivo na pasta ou começar em 0 se não houver arquivos
 def get_starting_counter(directory):
@@ -58,7 +59,7 @@ for j, letter in enumerate(alphabet):
 	counter = get_starting_counter(class_dir)
 
 	# Queremos adicionar mais 100 imagens, independente de quantas já existam
-	imagens_restantes = dataset_size
+	imagens_restantes = DATASET_SIZE
 
 	# Capturar e salvar imagens até adicionar mais 100
 	while imagens_restantes > 0:
@@ -77,7 +78,7 @@ for j, letter in enumerate(alphabet):
 		counter += 1
 		imagens_restantes -= 1
 
-	print(f'Capturadas mais {dataset_size} imagens para a letra {letter}.')
+	print(f'Capturadas mais {DATASET_SIZE} imagens para a letra {letter}.')
 
 cap.release()
 cv2.destroyAllWindows()

@@ -22,15 +22,15 @@ hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_c
 
 # Listas de palavras por dificuldade
 easy_words = [
-    "AMOR", "PAZ", "LUA", "SOL", "FLOR", "BOCA", "OLHO", "MÃO", "PÉ", "CÉU", "MAR", "BOM", "MAU", "VIDA", "FÉ", 
-    "CALMA", "DIA", "NOITE", "SORRIR", "ÁGUA"
+    "AMOR", "PAZ", "LUA", "SOL", "FLOR", "BOCA", "OLHO", "MÃO", "PÉ", "CÉU", "MAR", "BOM", "MAU", "VIDA", "FE", 
+    "CALMA", "DIA", "NOITE", "SORRIR", "AGUA"
 ]
 medium_words = [
     "CASA", "MUNDO", "FAMÍLIA", "LIVRO", "ESCOLA", "AMIGO", "FELIZ", "CIDADE", "PEIXE", "FLORIDA"
 ]
 hard_words = [
-    "CONHECIMENTO", "RESPONSABILIDADE", "DESENVOLVIMENTO", "UNIVERSIDADE", "INTELIGÊNCIA", "COMUNICAÇÃO", 
-    "SIGNIFICADO", "AUTOMÓVEL", "INFORMAÇÃO", "IMPLEMENTAÇÃO"
+    "CONHECIMENTO", "RESPONSABILIDADE", "DESENVOLVIMENTO", "UNIVERSIDADE", "INTELIGENCIA", "COMUNICACAO", 
+    "SIGNIFICADO", "AUTOMOVEL", "INFORMAÇÃO", "IMPLEMENTACAO"
 ]
 
 # Função para escolher uma palavra aleatória com base na dificuldade
