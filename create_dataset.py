@@ -50,18 +50,23 @@ for dir_ in os.listdir(DATA_DIR):
                     x_.append(x)
                     y_.append(y)
 
-                # Normalizando as coordenadas: centralizando os landmarks ao subtrair os valores mínimos de x e y
-                for i in range(len(hand_landmarks.landmark)):
+                    # Normalizando as coordenadas: centralizando os landmarks ao subtrair os valores mínimos de x e y
                     x = hand_landmarks.landmark[i].x
                     y = hand_landmarks.landmark[i].y
                     # Normalização: subtraindo o valor mínimo para cada coordenada (alinhando as mãos)
                     data_aux.append(x - min(x_))
                     data_aux.append(y - min(y_))
+                    
+            if len(data_aux) == 42:
+                # Adiciona os dados normalizados da imagem à lista principal de dados
+                data.append(data_aux)
+                # Adiciona o nome da subpasta (que corresponde ao rótulo/classe) à lista de rótulos
+                labels.append(dir_)
 
-            # Adiciona os dados normalizados da imagem à lista principal de dados
-            data.append(data_aux)
-            # Adiciona o nome da subpasta (que corresponde ao rótulo/classe) à lista de rótulos
-            labels.append(dir_)
+            # # Adiciona os dados normalizados da imagem à lista principal de dados
+            # data.append(data_aux)
+            # # Adiciona o nome da subpasta (que corresponde ao rótulo/classe) à lista de rótulos
+            # labels.append(dir_)
             
 # Finalizar o cronômetro
 end_time = time.time()

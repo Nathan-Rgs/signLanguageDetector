@@ -113,60 +113,67 @@ def main(game_mode=True, difficulty='easy'):
                 data_aux.append(hand_landmarks.landmark[i].y - min(y_) / H)
 
             # Fazer a previsão usando o modelo treinado
-            prediction = model.predict([np.asarray(data_aux)])
-            predicted_character = prediction[0]  # A previsão já é a string ('A', 'B', 'C' etc.)
+            if len(data_aux) == 42:
+                prediction = model.predict([np.asarray(data_aux)])
+                predicted_character = prediction[0]
 
-            if game_mode:
-                # Verificar se a letra detectada corresponde à letra atual da palavra
-                letra_atual = current_word[current_letter_idx]
+                if game_mode:
+                    # Verificar se a letra detectada corresponde à letra atual da palavra
+                    letra_atual = current_word[current_letter_idx]
 
-                if predicted_character == letra_atual:
-                    # Acertou a letra atual
-                    hit_letters.append(letra_atual)
-                    current_letter_idx += 1
-                    erros = False
+                    if predicted_character == letra_atual:
+                        # Acertou a letra atual
+                        hit_letters.append(letra_atual)
+                        current_letter_idx += 1
+                        erros = False
 
-                    # Se a palavra foi soletrada completamente
-                    if current_letter_idx == len(current_word):
-                        correct_words += 1
-                        current_letter_idx = 0
-                        hit_letters = []
-                        current_word = new_word(difficulty)
+                        # Se a palavra foi soletrada completamente
+                        if current_letter_idx == len(current_word):
+                            correct_words += 1
+                            current_letter_idx = 0
+                            hit_letters = []
+                            current_word = new_word(difficulty)
 
-                        # Exibir a nova palavra por 3 segundos
-                        show_spelled_word(frame, current_word, time_sec=3)
+                            # Exibir a nova palavra por 3 segundos
+                            show_spelled_word(frame, current_word, time_sec=3)
+
+                    else:
+                        # Errou a letra
+                        erros = True
+
+                    # Exibir a palavra no canto inferior da tela, pintando as letras acertadas de verde
+                    word_display = ""
+                    for i, letter in enumerate(current_word):
+                        if i < current_letter_idx:
+                            word_display += f"{letter} "
+                        else:
+                            word_display += f"_ "
+
+                    # Desenhar a palavra na tela
+                    cv2.putText(frame, word_display, (50, H - 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3, cv2.LINE_AA)
+
+                    # Se houve um erro, mostrar um X vermelho na tela
+                    if erros:
+                        cv2.putText(frame, "X", (W // 2 - 50, H // 2 - 50), cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 0, 255), 10, cv2.LINE_AA)
 
                 else:
-                    # Errou a letra
-                    erros = True
+                    # Apenas mostrar a letra detectada (sem jogo)
+                    # Definindo os limites do retângulo com base nos pontos de referência da mão
+                    x1 = int(min(x_)) - 10
+                    y1 = int(min(y_)) - 10
 
-                # Exibir a palavra no canto inferior da tela, pintando as letras acertadas de verde
-                word_display = ""
-                for i, letter in enumerate(current_word):
-                    if i < current_letter_idx:
-                        word_display += f"{letter} "
+                    x2 = int(max(x_)) + 10
+                    y2 = int(max(y_)) + 10
+
+                    # Desenhar o retângulo e exibir a letra
+                    
+                    if predicted_character == 'None':
+                        # Desenhar um retângulo vermelho ao redor da mão
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)  # Vermelho
+                        cv2.putText(frame, "N/A", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 3, cv2.LINE_AA)
                     else:
-                        word_display += f"_ "
-
-                # Desenhar a palavra na tela
-                cv2.putText(frame, word_display, (50, H - 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3, cv2.LINE_AA)
-
-                # Se houve um erro, mostrar um X vermelho na tela
-                if erros:
-                    cv2.putText(frame, "X", (W // 2 - 50, H // 2 - 50), cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 0, 255), 10, cv2.LINE_AA)
-
-            else:
-                # Apenas mostrar a letra detectada (sem jogo)
-                # Definindo os limites do retângulo com base nos pontos de referência da mão
-                x1 = int(min(x_)) - 10
-                y1 = int(min(y_)) - 10
-
-                x2 = int(max(x_)) + 10
-                y2 = int(max(y_)) + 10
-
-                # Desenhar o retângulo e exibir a letra
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 2)
-                cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 2)
+                        cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
 
         # Mostrar o frame com os resultados
         cv2.imshow('frame', frame)

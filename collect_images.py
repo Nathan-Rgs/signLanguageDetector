@@ -10,7 +10,7 @@ if not os.path.exists(DATA_DIR):
 	os.makedirs(DATA_DIR)
 
 # Lista de letras do alfabeto A-Z
-alphabet = list(string.ascii_uppercase)
+alphabet = list(string.ascii_uppercase) + ['None']
 
 # Função para obter o maior número de arquivo na pasta ou começar em 0 se não houver arquivos
 def get_starting_counter(directory):
