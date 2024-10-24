@@ -1,7 +1,7 @@
+import numpy as np
 import pickle
 import cv2
 import mediapipe as mp
-import numpy as np
 import random
 import time
 
@@ -22,15 +22,15 @@ hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_c
 
 # Listas de palavras por dificuldade
 easy_words = [
-    "AMOR", "PAZ", "LUA", "SOL", "FLOR", "BOCA", "OLHO", "MÃO", "PÉ", "CÉU", "MAR", "BOM", "MAU", "VIDA", "FE", 
+    "AMOR", "PAZ", "LUA", "SOL", "FLOR", "BOCA", "OLHO", "MAO", "PE", "CEU", "MAR", "BOM", "MAU", "VIDA", "FE", 
     "CALMA", "DIA", "NOITE", "SORRIR", "AGUA"
 ]
 medium_words = [
-    "CASA", "MUNDO", "FAMÍLIA", "LIVRO", "ESCOLA", "AMIGO", "FELIZ", "CIDADE", "PEIXE", "FLORIDA"
+    "CASA", "MUNDO", "FAMILIA", "LIVRO", "ESCOLA", "AMIGO", "FELIZ", "CIDADE", "PEIXE", "FLORIDA"
 ]
 hard_words = [
     "CONHECIMENTO", "RESPONSABILIDADE", "DESENVOLVIMENTO", "UNIVERSIDADE", "INTELIGENCIA", "COMUNICACAO", 
-    "SIGNIFICADO", "AUTOMOVEL", "INFORMAÇÃO", "IMPLEMENTACAO"
+    "SIGNIFICADO", "AUTOMOVEL", "INFORMACAO", "IMPLEMENTACAO"
 ]
 
 # Função para escolher uma palavra aleatória com base na dificuldade
@@ -48,14 +48,20 @@ def new_word(difficulty):
 def show_spelled_word(frame, word, time_sec=3):
     start_time = time.time()
     while time.time() - start_time < time_sec:
-        # Mostrar a palavra no centro da tela
-        cv2.putText(frame, word, (100, 200), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 5, cv2.LINE_AA)
+        # Centralizar a palavra na tela
+        text_size = cv2.getTextSize(word, cv2.FONT_HERSHEY_SIMPLEX, 3, 5)[0]
+        text_x = (frame.shape[1] - text_size[0]) // 2
+        text_y = (frame.shape[0] + text_size[1]) // 2
+
+        cv2.putText(frame, word, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 5, cv2.LINE_AA)
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-# Função principal que pode alternar entre o modo de jogo e leitor de linguagem de sinais
+# Função principal
 def main(game_mode=True, difficulty='easy'):
+    threshold = 0.6  # Definir um limiar de confiança para a predição
+
     if game_mode:
         correct_words = 0
         current_word = new_word(difficulty)
@@ -114,8 +120,13 @@ def main(game_mode=True, difficulty='easy'):
 
             # Fazer a previsão usando o modelo treinado
             if len(data_aux) == 42:
-                prediction = model.predict([np.asarray(data_aux)])
-                predicted_character = prediction[0]
+                prediction_proba = model.predict_proba([np.asarray(data_aux)])
+                predicted_confidence = np.max(prediction_proba)  # Pega a maior confiança
+                predicted_character = model.classes_[np.argmax(prediction_proba)]  # Pega a classe correspondente à maior confiança
+
+                # Se a confiança for menor que o limiar ou a predição for "None", classifica como "desconhecido"
+                if predicted_confidence < threshold or predicted_character == 'None':
+                    predicted_character = "Desconhecido"
 
                 if game_mode:
                     # Verificar se a letra detectada corresponde à letra atual da palavra
@@ -141,16 +152,13 @@ def main(game_mode=True, difficulty='easy'):
                         # Errou a letra
                         erros = True
 
-                    # Exibir a palavra no canto inferior da tela, pintando as letras acertadas de verde
-                    word_display = ""
-                    for i, letter in enumerate(current_word):
-                        if i < current_letter_idx:
-                            word_display += f"{letter} "
-                        else:
-                            word_display += f"_ "
+                    # Otimização: Exibir a palavra atual com letras acertadas e sublinhar o restante
+                    word_display = "".join(hit_letters) + "_ " * (len(current_word) - current_letter_idx)
+                    text_size = cv2.getTextSize(word_display, cv2.FONT_HERSHEY_SIMPLEX, 2, 3)[0]
+                    text_x = (W - text_size[0]) // 2
 
                     # Desenhar a palavra na tela
-                    cv2.putText(frame, word_display, (50, H - 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3, cv2.LINE_AA)
+                    cv2.putText(frame, word_display, (text_x, H - 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3, cv2.LINE_AA)
 
                     # Se houve um erro, mostrar um X vermelho na tela
                     if erros:
@@ -167,7 +175,7 @@ def main(game_mode=True, difficulty='easy'):
 
                     # Desenhar o retângulo e exibir a letra
                     
-                    if predicted_character == 'None':
+                    if predicted_character == 'Desconhecido':
                         # Desenhar um retângulo vermelho ao redor da mão
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)  # Vermelho
                         cv2.putText(frame, "N/A", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 3, cv2.LINE_AA)
