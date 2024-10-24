@@ -70,6 +70,15 @@ Este projeto é de código aberto e tem como objetivo ajudar a comunidade a apre
 - **Melhorar o modelo**: Trabalhe para melhorar o desempenho do modelo de reconhecimento.
 - **Relatar problemas**: Caso encontre problemas, abra uma issue ou envie sugestões de melhoria.
 
+### 4. **Executando com LSTM ao invés de Random_Forrest**
+
+A ideia é a mesma, temos alguns steps:
+1. collect_images.py: Ao executar lembre-se de fazer o movimento, se a letra for parada deixe o maximo estático durante a captura.
+2. create_dataset.py: Ao executar irá gerar o dataset (sequences_data.pickle, label_encoder.pickle).
+3. train_lstm_model.py: Ao criar os datasets você poderá usar o LSTM train para fazer o treinamento, ele possui 30 epochs.
+4. verify_pickle.py: Simples verificação de arquivos.
+5. interface.py: Irá rodar a interface assim como para random_forrest, opção game e sem game.
+
 ## Créditos
 
 Este projeto utiliza bibliotecas como **OpenCV**, **MediaPipe** e **Scikit-learn** para a detecção de gestos e aprendizado de máquina. Um agradecimento especial a todos os desenvolvedores dessas ferramentas, que tornam este projeto possível.
