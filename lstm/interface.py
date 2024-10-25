@@ -34,6 +34,9 @@ hands = mp_hands.Hands(
 SEQUENCE_LENGTH = 10
 sequence = deque(maxlen=SEQUENCE_LENGTH)
 
+# Definir o limiar de confiança
+threshold = 0.6
+
 # Função para normalizar landmarks de uma única mão
 def normalize_landmarks(hand_landmarks):
     x = [lm.x for lm in hand_landmarks.landmark]
@@ -94,16 +97,23 @@ def main():
             if len(sequence) == SEQUENCE_LENGTH:
                 input_seq = np.array(sequence).reshape(1, SEQUENCE_LENGTH, 42)
                 prediction = model.predict(input_seq)
-                predicted_class = le.inverse_transform([np.argmax(prediction)])
+                predicted_class = np.argmax(prediction)
+                predicted_confidence = np.max(prediction)
 
-                # Exibir a letra prevista na tela
+                # Verificar se a confiança da previsão é baixa
+                if predicted_confidence < threshold:
+                    predicted_label = "Desconhecido"
+                else:
+                    predicted_label = le.inverse_transform([predicted_class])[0]
+
+                # Exibir a previsão (letra ou "Desconhecido")
                 cv2.putText(
                     frame, 
-                    f'Letra: {predicted_class[0]}', 
+                    f'Letra: {predicted_label} ({predicted_confidence:.2f})', 
                     (50, 50),
                     cv2.FONT_HERSHEY_SIMPLEX, 
                     1.5, 
-                    (0, 255, 0), 
+                    (0, 255, 0) if predicted_confidence >= threshold else (0, 0, 255), 
                     3, 
                     cv2.LINE_AA
                 )

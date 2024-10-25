@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import os
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
@@ -7,7 +8,11 @@ from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 
 # Carregar os dados processados
-with open('./data/sequences_data.pickle', 'rb') as f:
+current_dir = os.path.dirname(os.path.abspath(__file__))
+data_path = os.path.join(current_dir, 'data', 'sequences_data.pickle')
+
+# Carregar os dados processados
+with open(data_path, 'rb') as f:
     data_dict = pickle.load(f)
 
 data = np.array(data_dict['data'])  # [n_samples, SEQUENCE_LENGTH, 42]
@@ -19,7 +24,10 @@ y = le.fit_transform(labels)
 y = to_categorical(y)
 
 # Salvar o codificador para uso futuro
-with open('./data/label_encoder.pickle', 'wb') as f:
+label_encoder_path = os.path.join(current_dir, 'data', 'label_encoder.pickle')
+
+# Salvar o codificador para uso futuro
+with open(label_encoder_path, 'wb') as f:
     pickle.dump(le, f)
 
 # Dividir os dados em treino e teste

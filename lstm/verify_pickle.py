@@ -1,7 +1,9 @@
-import pickle
+import pickle, os
 
 try:
-    with open('./data/sequences_data.pickle', 'rb') as f:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    data_path = os.path.join(current_dir, 'data', 'sequences_data.pickle')
+    with open(data_path, 'rb') as f:
         data_dict = pickle.load(f)
     print("Pickle carregado com sucesso!")
     print(f"Quantidade de amostras: {len(data_dict['data'])}")
